@@ -23,4 +23,4 @@ jobs:
         deployment_mode: docker-compose
         pull_images_first: 'true'
         args: --env-file /var/lib/docker-deploy/.env up -d
-        pre_deployment_command_args: 'docker-compose -f /var/lib/docker-deploy/docker-compose.prod.yml down'
+        pre_deployment_command_args: 'down'
