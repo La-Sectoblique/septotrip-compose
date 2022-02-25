@@ -16,6 +16,7 @@ services:
     - "/var/run/docker.sock:/var/run/docker.sock:ro"
   api:
     image: "ghcr.io/la-sectoblique/septotrip-api:master"
+    restart: always
     links:
     - postgres
     environment:
