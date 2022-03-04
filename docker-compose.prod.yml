@@ -27,6 +27,7 @@ services:
       POSTGRES_USER: sept-api
       POSTGRES_PASSWORD: palila
       POSTGRES_PORT: 5432
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
     labels:
     - "traefik.enable=true"
     - "traefik.http.routers.api.rule=Host(`api.${URL}`)"
