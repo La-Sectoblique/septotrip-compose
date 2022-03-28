@@ -5,6 +5,7 @@ services:
     links:
     - "api"
     - "doc"
+    - "minio"
     command:
     - "--api.insecure=true"
     - "--providers.docker=true"
@@ -34,6 +35,11 @@ services:
     - "traefik.http.routers.api.rule=Host(`api.${URL}`)"
     - "traefik.http.services.api.loadbalancer.server.port=80"
     - "traefik.http.middlewares.cors-headers.headers.accessControlAllowOriginListRegex=(.*?)"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_started
   postgres:
     image: "postgis/postgis"
     restart: always
@@ -41,6 +47,10 @@ services:
       POSTGRES_DB: septo-prod
       POSTGRES_USER: sept-api
       POSTGRES_PASSWORD: palila
+    healthcheck:
+      test: ["CMD", "pg_isready", "--dbname=septo-prod", "--host=localhost", "--username=sept-api"]
+      timeout: 10s
+      retries: 10
   doc: 
     image: "ghcr.io/la-sectoblique/septrotrip-service:master"
     restart: always
@@ -49,3 +59,27 @@ services:
     - "traefik.http.routers.doc.rule=Host(`doc.${URL}`)"
     - "traefik.http.services.doc.loadbalancer.server.port=80"
     - "traefik.http.middlewares.cors-headers.headers.accessControlAllowOriginListRegex=(.*?)"
+  minio:
+    image: minio/minio
+    volumes:
+    - minio-data:/data
+    environment:
+    - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+    - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+    - MINIO_BROWSER_REDIRECT_URL=http://stash.${URL}
+    command:
+    - server
+    - /data
+    - --console-address
+    - ":9001"
+    labels:
+    - "traefik.enable=true"
+    - "traefik.http.routers.minio.service=minio"
+    - "traefik.http.routers.minio.rule=Host(`files.${URL}`)"
+    - "traefik.http.services.minio.loadbalancer.server.port=9000"
+    - "traefik.http.middlewares.cors-headers.headers.accessControlAllowOriginListRegex=(.*?)"
+    - "traefik.http.routers.minio-console.service=minio-console"
+    - "traefik.http.routers.minio-console.rule=Host(`stash.${URL}`)"
+    - "traefik.http.services.minio-console.loadbalancer.server.port=9001"
+volumes:
+  minio-data:
