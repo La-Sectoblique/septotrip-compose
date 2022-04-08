@@ -48,6 +48,16 @@ services:
         condition: service_healthy
       minio:
         condition: service_started
+  webapp:
+    image: "ghcr.io/la-sectoblique/septotrip-webapp:master"
+    restart: always
+    links:
+    - api
+    labels:
+    - "traefik.enable=true"
+    - "traefik.http.routers.webapp.rule=Host(`${URL}`)"
+    - "traefik.http.services.webapp.loadbalancer.server.port=80"
+    - "traefik.http.middlewares.cors-headers.headers.accessControlAllowOriginListRegex=(.*?)"
   postgres:
     image: "postgis/postgis"
     restart: always
