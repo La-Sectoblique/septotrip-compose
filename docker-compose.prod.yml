@@ -2,6 +2,7 @@ version: "3.3"
 services:
   reverse-proxy: 
     image: "traefik"
+    restart: always
     links:
     - "api"
     - "doc"
@@ -16,6 +17,13 @@ services:
     - 80:80
     volumes:
     - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    depends_on:
+      api:
+        condition: service_started
+      minio:
+        condition: service_started
+      doc:
+        condition: service_started
   api:
     image: "ghcr.io/la-sectoblique/septotrip-api:master"
     restart: always
@@ -81,5 +89,6 @@ services:
     - "traefik.http.routers.minio-console.service=minio-console"
     - "traefik.http.routers.minio-console.rule=Host(`stash.${URL}`)"
     - "traefik.http.services.minio-console.loadbalancer.server.port=9001"
+
 volumes:
   minio-data:
