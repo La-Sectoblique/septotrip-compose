@@ -29,6 +29,7 @@ services:
     restart: always
     links:
     - postgres
+    - minio
     environment:
       NODE_ENV: production
       API_PORT: 80
