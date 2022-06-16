@@ -88,6 +88,19 @@ services:
       test: ["CMD", "pg_isready", "--dbname=${DB_NAME}", "--host=localhost", "--username=${DB_USER}"]
       timeout: 10s
       retries: 10
+  postgres-test:
+    image: "postgis/postgis"
+    restart: always
+    ports:
+    - 5433:5432
+    environment:
+      POSTGRES_DB: test-${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    healthcheck:
+      test: ["CMD", "pg_isready", "--dbname=test-${DB_NAME}", "--host=localhost", "--username=${DB_USER}"]
+      timeout: 10s
+      retries: 10
   doc: 
     image: "ghcr.io/la-sectoblique/septrotrip-service:master"
     restart: always
