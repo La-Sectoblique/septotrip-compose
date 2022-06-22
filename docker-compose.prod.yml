@@ -144,7 +144,7 @@ services:
     image: "nginx:1.21.5-alpine"
     restart: always
     volumes:
-    - ${APK_LOCATION}:/usr/share/nginx/html/latest.apk
+    - ${APK_LOCATION}:/usr/share/nginx/html/septotrip-latest.apk
     labels:
     - "traefik.enable=true"
     - "traefik.http.routers.mobileapp.rule=Host(`mobile.${URL}`)"
