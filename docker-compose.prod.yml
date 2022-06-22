@@ -127,3 +127,16 @@ services:
     - "traefik.http.routers.minio-console.tls=true"
     - "traefik.http.routers.minio-console.tls.certresolver=httpsresolver"
     - "traefik.http.routers.minio-console.entrypoints=websecure"
+  mobileapp:
+    image: "nginx:1.21.5-alpine"
+    restart: always
+    volumes:
+    - ${APK_LOCATION}:/usr/share/nginx/html/latest.apk
+    labels:
+    - "traefik.enable=true"
+    - "traefik.http.routers.mobileapp.rule=Host(`mobile.${URL}`)"
+    - "traefik.http.services.mobileapp.loadbalancer.server.port=80"
+    - "traefik.http.routers.mobileapp.tls=true"
+    - "traefik.http.routers.mobileapp.tls.certresolver=httpsresolver"
+    - "traefik.http.routers.mobileapp.entrypoints=websecure"
+    - "traefik.http.middlewares.cors-headers.headers.accessControlAllowOriginListRegex=(.*?)"
